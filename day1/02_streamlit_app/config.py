@@ -1,3 +1,3 @@
 # config.py
 DB_FILE = "chat_feedback.db"
-MODEL_NAME = "google/gemma-7b"
+MODEL_NAME = "meta-llama/Llama-3.2-1B"
