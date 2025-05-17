@@ -179,6 +179,7 @@ def test_model_performance(train_model):
     
     """既存モデルファイルが存在するか確認"""
     if not os.path.exists(MODEL_PATH):
+        os.rename(LATEST_MODEL_PATH, MODEL_PATH)
         pytest.skip("既存モデルファイルが存在しないためスキップします")
     assert os.path.exists(MODEL_PATH), "既存モデルファイルが存在しません"
     
