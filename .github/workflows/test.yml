@@ -58,7 +58,6 @@ jobs:
             COMMIT_MESSAGE="新しいモデルをコミット"
           fi
 
-          git pull --rebase origin ${GITHUB_HEAD_REF}
           git commit -m "${COMMIT_MESSAGE}"
           git push origin HEAD:${GITHUB_HEAD_REF}
         fi
