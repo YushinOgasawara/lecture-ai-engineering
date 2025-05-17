@@ -51,6 +51,8 @@ jobs:
         EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GITHUB_REPOSITORY: ${{ github.repository }}
+        FIRST_MODEL: ${{ env.FIRST_MODEL }}
+        MODEL_IMPROVED: ${{ env.MODEL_IMPROVED }}
       
 
       run: |
