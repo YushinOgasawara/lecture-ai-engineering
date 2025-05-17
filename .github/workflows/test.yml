@@ -49,14 +49,14 @@ jobs:
         EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GITHUB_REPOSITORY: ${{ github.repository }}
-        TARGET_BRANCH: "${{ github.event.pull_request.base.ref }}"
+        
 
       run: |
         if [ -f "day5/homework/models/titanic_model_latest.pkl" ]; then
           git remote set-url origin https://github-actions:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}
           git config --local user.email "${EMAIL}"
           git config --local user.name "${USERNAME}"
-          git checkout ${TARGET_BRANCH}
+          git checkout develop
           cd day5/homework/models
           mv titanic_model_latest.pkl titanic_model.pkl
           git add .
