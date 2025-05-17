@@ -52,12 +52,15 @@ jobs:
           mv titanic_model_latest.pkl titanic_model.pkl
           git add titanic_model.pkl
           
+          git fetch origin
+          git merge origin/${GITHUB_HEAD_REF} -X ours || echo "No remote changes to merge"
+
           if [ "${MODEL_IMPROVED}" = "true" ]; then
             COMMIT_MESSAGE="モデルを更新: 推論時間が ${OLD_MODEL_TIME}秒 から ${NEW_MODEL_TIME}秒 に改善"
           else
             COMMIT_MESSAGE="新しいモデルをコミット"
           fi
 
-          git commit -m "${COMMIT_MESSAGE}"
+          git commit -m "${COMMIT_MESSAGE}" || echo "No changes to commit"
           git push origin HEAD:${GITHUB_HEAD_REF}
         fi
