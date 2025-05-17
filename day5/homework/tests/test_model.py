@@ -15,7 +15,9 @@ from sklearn.pipeline import Pipeline
 # テスト用データとモデルパスを定義
 DATA_PATH = os.path.join(os.path.dirname(__file__), "../data/Titanic.csv")
 MODEL_DIR = os.path.join(os.path.dirname(__file__), "../models")
-MODEL_PATH = os.path.join(MODEL_DIR, "titanic_model.pkl")
+LATEST_MODEL_PATH = os.path.join(MODEL_DIR, "titanic_model_latest.pkl")
+MODEL_PATH = os.path.join(MODEL_DIR, "titanic_model_latest.pkl")
+
 
 
 @pytest.fixture
@@ -96,7 +98,7 @@ def train_model(sample_data, preprocessor):
 
     # モデルの保存
     os.makedirs(MODEL_DIR, exist_ok=True)
-    with open(MODEL_PATH, "wb") as f:
+    with open(LATEST_MODEL_PATH, "wb") as f:
         pickle.dump(model, f)
 
     return model, X_test, y_test
@@ -104,9 +106,9 @@ def train_model(sample_data, preprocessor):
 
 def test_model_exists():
     """モデルファイルが存在するか確認"""
-    if not os.path.exists(MODEL_PATH):
+    if not os.path.exists(LATEST_MODEL_PATH):
         pytest.skip("モデルファイルが存在しないためスキップします")
-    assert os.path.exists(MODEL_PATH), "モデルファイルが存在しません"
+    assert os.path.exists(LATEST_MODEL_PATH), "モデルファイルが存在しません"
 
 
 def test_model_accuracy(train_model):
@@ -171,3 +173,36 @@ def test_model_reproducibility(sample_data, preprocessor):
     assert np.array_equal(
         predictions1, predictions2
     ), "モデルの予測結果に再現性がありません"
+
+def test_model_performance(train_model):
+    """モデルの性能を検証"""
+    
+    """既存モデルファイルが存在するか確認"""
+    if not os.path.exists(MODEL_PATH):
+        pytest.skip("既存モデルファイルが存在しないためスキップします")
+    assert os.path.exists(MODEL_PATH), "既存モデルファイルが存在しません"
+    
+    """モデルの性能を検証"""
+    latest_model, X_test, _ = train_model
+    
+    with open(MODEL_PATH, "rb") as f:
+        old_model = pickle.load(f)
+
+    # 推論時間の計測
+    start_time = time.time()
+    old_model.predict(X_test)
+    end_time = time.time()
+    
+    old_inference_time = end_time - start_time
+    
+    start_time = time.time()
+    latest_model.predict(X_test)
+    end_time = time.time()
+    
+    latest_inference_time = end_time - start_time
+    
+    assert latest_inference_time < old_inference_time, f"新しいモデルの推論時間が古いモデルより遅いです。 latest:{latest_inference_time}秒  old:{old_inference_time}秒"
+    
+    
+    
+    
