@@ -202,6 +202,12 @@ def test_model_performance(train_model):
 
     latest_inference_time = end_time - start_time
 
-    assert (
-        latest_inference_time < old_inference_time
-    ), f"新しいモデルの推論時間が古いモデルより遅いです。 latest:{latest_inference_time}秒  old:{old_inference_time}秒"
+    is_better = latest_inference_time < old_inference_time
+
+    if is_better:
+        # 最新モデルの方が性能が良い場合、環境変数にフラグを設定
+        os.environ["MODEL_IMPROVED"] = "true"
+        os.environ["OLD_MODEL_TIME"] = str(old_inference_time)
+        os.environ["NEW_MODEL_TIME"] = str(latest_inference_time)
+
+    assert is_better, f"新しいモデルの推論時間が古いモデルより遅いです。 latest:{latest_inference_time}秒  old:{old_inference_time}秒"

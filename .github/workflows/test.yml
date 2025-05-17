@@ -9,6 +9,8 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
     - uses: actions/checkout@v3
     
@@ -37,5 +39,17 @@ jobs:
         pytest day5/homework/tests/test_data.py -v
         
     - name: Run model tests
+      id: model_test
       run: |
         pytest day5/homework/tests/test_model.py -v
+      
+    - name: Update model if improved
+      if: env.MODEL_IMPROVED == 'true'
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        cd day5/homework/models
+        mv titanic_model_latest.pkl titanic_model.pkl
+        git add titanic_model.pkl
+        git commit -m "🤖 モデルを更新: 推論時間が ${OLD_MODEL_TIME}秒 から ${NEW_MODEL_TIME}秒 に改善"
+        git push
