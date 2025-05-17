@@ -49,7 +49,9 @@ jobs:
         EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GITHUB_REPOSITORY: ${{ github.repository }}
-        
+      
+      with:
+        ref: ${{ github.event.pull_request.head.ref }}
 
       run: |
         if [ -f "day5/homework/models/titanic_model_latest.pkl" ]; then
@@ -67,5 +69,5 @@ jobs:
           fi
 
           git commit -m "${COMMIT_MESSAGE}" || echo "No changes to commit"
-          git push origin HEAD:develop
+          git push origin HEAD:d${GITHUB_REF#refs/heads/}
         fi
