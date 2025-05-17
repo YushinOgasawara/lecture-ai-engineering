@@ -62,10 +62,12 @@ jobs:
           mv titanic_model_latest.pkl titanic_model.pkl
           git add .
           
+          if [ "${FIRST_MODEL}" = "true" ]; then
+            COMMIT_MESSAGE="新しいモデルをコミット"
+          fi
+
           if [ "${MODEL_IMPROVED}" = "true" ]; then
             COMMIT_MESSAGE="モデルを更新: 推論時間が ${OLD_MODEL_TIME}秒 から ${NEW_MODEL_TIME}秒 に改善"
-          else
-            COMMIT_MESSAGE="新しいモデルをコミット"
           fi
 
           git commit -m "${COMMIT_MESSAGE}" || echo "No changes to commit"
