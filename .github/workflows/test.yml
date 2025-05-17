@@ -44,17 +44,23 @@ jobs:
         pytest day5/homework/tests/test_model.py -v
 
     - name: Update model
+      env:
+        USERNAME: github-actions [bot]
+        EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_REPOSITORY: ${{ github.repository }}
+        TARGET_BRANCH: "${{ github.event.pull_request.base.ref }}"
+
       run: |
         if [ -f "day5/homework/models/titanic_model_latest.pkl" ]; then
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
+          git remote set-url origin https://github-actions:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}
+          git config --local user.email "${EMAIL}"
+          git config --local user.name "${USERNAME}"
+          git checkout ${TARGET_BRANCH}
           cd day5/homework/models
           mv titanic_model_latest.pkl titanic_model.pkl
-          git add titanic_model.pkl
+          git add .
           
-          git fetch origin
-          git merge origin/${GITHUB_HEAD_REF} -X ours || echo "No remote changes to merge"
-
           if [ "${MODEL_IMPROVED}" = "true" ]; then
             COMMIT_MESSAGE="モデルを更新: 推論時間が ${OLD_MODEL_TIME}秒 から ${NEW_MODEL_TIME}秒 に改善"
           else
@@ -62,5 +68,5 @@ jobs:
           fi
 
           git commit -m "${COMMIT_MESSAGE}" || echo "No changes to commit"
-          git push origin HEAD:${GITHUB_HEAD_REF}
+          git push origin ${TARGET_BRANCH}
         fi
