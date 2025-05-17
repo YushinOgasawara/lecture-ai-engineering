@@ -179,11 +179,13 @@ def test_model_performance(train_model):
 
     """既存モデルファイルが存在するか確認"""
     if not os.path.exists(MODEL_PATH):
-        # GitHub Actionsで読み取れる形式で出力
-        print("::set-output name=FIRST_MODEL::true")
+        # GitHub Actionsで新しい構文を使用
+        with open(os.environ['GITHUB_OUTPUT'], 'a') as fh:
+            print(f'FIRST_MODEL=true', file=fh)
         pytest.skip("既存モデルファイルが存在しないためスキップします")
     else:
-        print("::set-output name=FIRST_MODEL::false")
+        with open(os.environ['GITHUB_OUTPUT'], 'a') as fh:
+            print(f'FIRST_MODEL=false', file=fh)
 
     """モデルの性能を検証"""
     latest_model, X_test, _ = train_model
@@ -207,12 +209,14 @@ def test_model_performance(train_model):
     is_better = latest_inference_time < old_inference_time
 
     if is_better:
-        # GitHub Actionsで読み取れる形式で出力
-        print("::set-output name=MODEL_IMPROVED::true")
-        print(f"::set-output name=OLD_MODEL_TIME::{old_inference_time}")
-        print(f"::set-output name=NEW_MODEL_TIME::{latest_inference_time}")
+        # GitHub Actionsで新しい構文を使用
+        with open(os.environ['GITHUB_OUTPUT'], 'a') as fh:
+            print(f'MODEL_IMPROVED=true', file=fh)
+            print(f'OLD_MODEL_TIME={old_inference_time}', file=fh)
+            print(f'NEW_MODEL_TIME={latest_inference_time}', file=fh)
     else:
-        print("::set-output name=MODEL_IMPROVED::false")
+        with open(os.environ['GITHUB_OUTPUT'], 'a') as fh:
+            print(f'MODEL_IMPROVED=false', file=fh)
 
     assert (
         is_better
