@@ -69,5 +69,5 @@ jobs:
           fi
 
           git commit -m "${COMMIT_MESSAGE}" || echo "No changes to commit"
-          git push origin HEAD:d${GITHUB_REF#refs/heads/}
+          git push origin HEAD:develop
         fi
