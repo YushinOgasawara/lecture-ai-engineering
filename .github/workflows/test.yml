@@ -56,7 +56,8 @@ jobs:
           git remote set-url origin https://github-actions:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}
           git config --local user.email "${EMAIL}"
           git config --local user.name "${USERNAME}"
-          git checkout develop
+          git switch -c develop
+          git pull origin develop
           cd day5/homework/models
           mv titanic_model_latest.pkl titanic_model.pkl
           git add .
