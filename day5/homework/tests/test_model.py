@@ -210,4 +210,6 @@ def test_model_performance(train_model):
         os.environ["OLD_MODEL_TIME"] = str(old_inference_time)
         os.environ["NEW_MODEL_TIME"] = str(latest_inference_time)
 
-    assert is_better, f"新しいモデルの推論時間が古いモデルより遅いです。 latest:{latest_inference_time}秒  old:{old_inference_time}秒"
+    assert (
+        is_better
+    ), f"新しいモデルの推論時間が古いモデルより遅いです。 latest:{latest_inference_time}秒  old:{old_inference_time}秒"
