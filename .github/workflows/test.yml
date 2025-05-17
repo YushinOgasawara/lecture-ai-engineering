@@ -56,8 +56,7 @@ jobs:
           git remote set-url origin https://github-actions:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}
           git config --local user.email "${EMAIL}"
           git config --local user.name "${USERNAME}"
-          git switch -c main
-          git pull --no-rebase origin main
+          git branch
           git switch -c develop
           git pull --no-rebase origin develop
           cd day5/homework/models
