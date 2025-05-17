@@ -13,6 +13,8 @@ jobs:
       contents: write
     steps:
     - uses: actions/checkout@v3
+      with:
+          ref: ${{ github.event.pull_request.head.ref }}
     
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -50,8 +52,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GITHUB_REPOSITORY: ${{ github.repository }}
       
-      with:
-        ref: ${{ github.event.pull_request.head.ref }}
 
       run: |
         if [ -f "day5/homework/models/titanic_model_latest.pkl" ]; then
