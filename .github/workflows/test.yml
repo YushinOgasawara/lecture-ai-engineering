@@ -67,5 +67,5 @@ jobs:
           fi
 
           git commit -m "${COMMIT_MESSAGE}" || echo "No changes to commit"
-          git push origin ${TARGET_BRANCH}
+          git push origin develop
         fi
