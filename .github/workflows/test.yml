@@ -42,14 +42,23 @@ jobs:
       id: model_test
       run: |
         pytest day5/homework/tests/test_model.py -v
-      
-    - name: Update model if improved
-      if: env.MODEL_IMPROVED == 'true'
+
+    - name: Update model
       run: |
-        git config --local user.email "github-actions[bot]@users.noreply.github.com"
-        git config --local user.name "github-actions[bot]"
-        cd day5/homework/models
-        mv titanic_model_latest.pkl titanic_model.pkl
-        git add titanic_model.pkl
-        git commit -m "🤖 モデルを更新: 推論時間が ${OLD_MODEL_TIME}秒 から ${NEW_MODEL_TIME}秒 に改善"
-        git push
+        if [ -f "day5/homework/models/titanic_model_latest.pkl" ]; then
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          cd day5/homework/models
+          mv titanic_model_latest.pkl titanic_model.pkl
+          git add titanic_model.pkl
+          
+          if [ "${MODEL_IMPROVED}" = "true" ]; then
+            COMMIT_MESSAGE="モデルを更新: 推論時間が ${OLD_MODEL_TIME}秒 から ${NEW_MODEL_TIME}秒 に改善"
+          else
+            COMMIT_MESSAGE="新しいモデルをコミット"
+          fi
+          
+          git commit -m "${COMMIT_MESSAGE}"
+          git pull --rebase
+          git push origin HEAD:${GITHUB_HEAD_REF}
+        fi
