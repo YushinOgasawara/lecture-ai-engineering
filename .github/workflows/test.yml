@@ -41,14 +41,9 @@ jobs:
         pytest day5/homework/tests/test_data.py -v
         
     - name: Run model tests
-      env:
-        FIRST_MODEL: ${{ github.event.inputs.FIRST_MODEL }}
-        MODEL_IMPROVED: ${{ github.event.inputs.MODEL_IMPROVED }}
-        OLD_MODEL_TIME: ${{ github.event.inputs.OLD_MODEL_TIME }}
-        NEW_MODEL_TIME: ${{ github.event.inputs.NEW_MODEL_TIME }}
       id: model_test
       run: |
-        pytest day5/homework/tests/test_model.py -v
+        pytest day5/homework/tests/test_model.py -v 2>&1 | tee test_output.txt
 
     - name: Update model
       env:
@@ -56,6 +51,10 @@ jobs:
         EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GITHUB_REPOSITORY: ${{ github.repository }}
+        FIRST_MODEL: ${{ steps.model_test.outputs.FIRST_MODEL }}
+        MODEL_IMPROVED: ${{ steps.model_test.outputs.MODEL_IMPROVED }}
+        OLD_MODEL_TIME: ${{ steps.model_test.outputs.OLD_MODEL_TIME }}
+        NEW_MODEL_TIME: ${{ steps.model_test.outputs.NEW_MODEL_TIME }}
       
 
       run: |

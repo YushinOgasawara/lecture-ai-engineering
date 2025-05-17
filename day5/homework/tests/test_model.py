@@ -179,10 +179,11 @@ def test_model_performance(train_model):
 
     """既存モデルファイルが存在するか確認"""
     if not os.path.exists(MODEL_PATH):
-        os.environ["FIRST_MODEL"] = "true"
+        # GitHub Actionsで読み取れる形式で出力
+        print("::set-output name=FIRST_MODEL::true")
         pytest.skip("既存モデルファイルが存在しないためスキップします")
     else:
-        os.environ["FIRST_MODEL"] = "false"
+        print("::set-output name=FIRST_MODEL::false")
 
     """モデルの性能を検証"""
     latest_model, X_test, _ = train_model
@@ -206,12 +207,12 @@ def test_model_performance(train_model):
     is_better = latest_inference_time < old_inference_time
 
     if is_better:
-        # 最新モデルの方が性能が良い場合、環境変数にフラグを設定
-        os.environ["MODEL_IMPROVED"] = "true"
-        os.environ["OLD_MODEL_TIME"] = str(old_inference_time)
-        os.environ["NEW_MODEL_TIME"] = str(latest_inference_time)
+        # GitHub Actionsで読み取れる形式で出力
+        print("::set-output name=MODEL_IMPROVED::true")
+        print(f"::set-output name=OLD_MODEL_TIME::{old_inference_time}")
+        print(f"::set-output name=NEW_MODEL_TIME::{latest_inference_time}")
     else:
-        os.environ["MODEL_IMPROVED"] = "false"
+        print("::set-output name=MODEL_IMPROVED::false")
 
     assert (
         is_better
