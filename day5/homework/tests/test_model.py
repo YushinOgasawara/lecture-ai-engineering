@@ -181,6 +181,8 @@ def test_model_performance(train_model):
     if not os.path.exists(MODEL_PATH):
         os.environ["FIRST_MODEL"] = "true"
         pytest.skip("既存モデルファイルが存在しないためスキップします")
+    else:
+        os.environ["FIRST_MODEL"] = "false"
 
     """モデルの性能を検証"""
     latest_model, X_test, _ = train_model
@@ -208,6 +210,8 @@ def test_model_performance(train_model):
         os.environ["MODEL_IMPROVED"] = "true"
         os.environ["OLD_MODEL_TIME"] = str(old_inference_time)
         os.environ["NEW_MODEL_TIME"] = str(latest_inference_time)
+    else:
+        os.environ["MODEL_IMPROVED"] = "false"
 
     assert (
         is_better
