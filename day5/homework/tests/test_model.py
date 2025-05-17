@@ -19,7 +19,6 @@ LATEST_MODEL_PATH = os.path.join(MODEL_DIR, "titanic_model_latest.pkl")
 MODEL_PATH = os.path.join(MODEL_DIR, "titanic_model_latest.pkl")
 
 
-
 @pytest.fixture
 def sample_data():
     """テスト用データセットを読み込む"""
@@ -174,18 +173,19 @@ def test_model_reproducibility(sample_data, preprocessor):
         predictions1, predictions2
     ), "モデルの予測結果に再現性がありません"
 
+
 def test_model_performance(train_model):
     """モデルの性能を検証"""
-    
+
     """既存モデルファイルが存在するか確認"""
     if not os.path.exists(MODEL_PATH):
         os.rename(LATEST_MODEL_PATH, MODEL_PATH)
         pytest.skip("既存モデルファイルが存在しないためスキップします")
     assert os.path.exists(MODEL_PATH), "既存モデルファイルが存在しません"
-    
+
     """モデルの性能を検証"""
     latest_model, X_test, _ = train_model
-    
+
     with open(MODEL_PATH, "rb") as f:
         old_model = pickle.load(f)
 
@@ -193,17 +193,15 @@ def test_model_performance(train_model):
     start_time = time.time()
     old_model.predict(X_test)
     end_time = time.time()
-    
+
     old_inference_time = end_time - start_time
-    
+
     start_time = time.time()
     latest_model.predict(X_test)
     end_time = time.time()
-    
+
     latest_inference_time = end_time - start_time
-    
-    assert latest_inference_time < old_inference_time, f"新しいモデルの推論時間が古いモデルより遅いです。 latest:{latest_inference_time}秒  old:{old_inference_time}秒"
-    
-    
-    
-    
+
+    assert (
+        latest_inference_time < old_inference_time
+    ), f"新しいモデルの推論時間が古いモデルより遅いです。 latest:{latest_inference_time}秒  old:{old_inference_time}秒"
