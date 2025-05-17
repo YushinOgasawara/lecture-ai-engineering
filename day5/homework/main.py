@@ -117,8 +117,7 @@ if __name__ == "__main__":
 
     model_dir = "models"
     os.makedirs(model_dir, exist_ok=True)
-    exp_id = str(sum(os.path.isfile(os.path.join(model_dir, f)) for f in os.listdir(model_dir)))
-    model_path = os.path.join(model_dir, f"titanic_model_exp{exp_id.zfill(3)}.pkl")
+    model_path = os.path.join(model_dir, f"titanic_model_latest.pkl")
     with open(model_path, "wb") as f:
         pickle.dump(model, f)
     print(f"モデルを {model_path} に保存しました")
