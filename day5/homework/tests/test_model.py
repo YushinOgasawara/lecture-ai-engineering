@@ -6,7 +6,7 @@ import pickle
 import time
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, f1_score
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.compose import ColumnTransformer
@@ -177,41 +177,38 @@ def test_model_reproducibility(sample_data, preprocessor):
 def test_model_performance(train_model):
     """モデルの性能を検証"""
 
+    # 環境変数の初期化
+    with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
+        print(f"MODEL_IMPROVED=true", file=fh)
+
     """既存モデルファイルが存在するか確認"""
     if not os.path.exists(MODEL_PATH):
-        # GitHub Actionsで新しい構文を使用
-        with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
-            print(f"FIRST_MODEL=true", file=fh)
         pytest.skip("既存モデルファイルが存在しないためスキップします")
     else:
         with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
             print(f"FIRST_MODEL=false", file=fh)
 
     """モデルの性能を検証"""
-    latest_model, X_test, _ = train_model
+    latest_model, X_test, y_test = train_model
 
     with open(MODEL_PATH, "rb") as f:
         old_model = pickle.load(f)
 
     # 推論時間の計測
     start_time = time.time()
-    old_model.predict(X_test)
+    old_pred = old_model.predict(X_test)
     end_time = time.time()
-
     old_inference_time = end_time - start_time
 
     start_time = time.time()
-    latest_model.predict(X_test)
+    latest_pred = latest_model.predict(X_test)
     end_time = time.time()
-
     latest_inference_time = end_time - start_time
 
-    is_better = latest_inference_time < old_inference_time
+    time_is_better = latest_inference_time < old_inference_time
 
-    if is_better:
-        # GitHub Actionsで新しい構文を使用
+    if time_is_better:
         with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
-            print(f"MODEL_IMPROVED=true", file=fh)
             print(f"OLD_MODEL_TIME={old_inference_time}", file=fh)
             print(f"NEW_MODEL_TIME={latest_inference_time}", file=fh)
     else:
@@ -219,5 +216,43 @@ def test_model_performance(train_model):
             print(f"MODEL_IMPROVED=false", file=fh)
 
     assert (
-        is_better
+        time_is_better
     ), f"新しいモデルの推論時間が古いモデルより遅いです。 latest:{latest_inference_time}秒  old:{old_inference_time}秒"
+
+    # 予測精度の計算
+    old_accuracy = accuracy_score(y_test, old_pred)
+
+    latest_accuracy = accuracy_score(y_test, latest_pred)
+
+    acc_is_better = latest_accuracy > old_accuracy
+
+    if acc_is_better:
+        with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
+            print(f"OLD_MODEL_ACCURACY={old_accuracy}", file=fh)
+            print(f"NEW_MODEL_ACCURACY={latest_accuracy}", file=fh)
+    else:
+        with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
+            print(f"MODEL_IMPROVED=false", file=fh)
+
+    assert (
+        acc_is_better
+    ), f"新しいモデルの精度が古いモデルより低いです。 latest:{latest_accuracy}  old:{old_accuracy}"
+
+    # モデルのF1スコアを計算
+    old_f1 = f1_score(y_test, old_pred)
+
+    latest_f1 = f1_score(y_test, latest_pred)
+
+    f1_is_better = latest_f1 > old_f1
+
+    if f1_is_better:
+        with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
+            print(f"OLD_MODEL_F1={old_f1}", file=fh)
+            print(f"NEW_MODEL_F1={latest_f1}", file=fh)
+    else:
+        with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
+            print(f"MODEL_IMPROVED=false", file=fh)
+
+    assert (
+        f1_is_better
+    ), f"新しいモデルのF1スコアが古いモデルより低いです。 latest:{latest_f1}  old:{old_f1}"
