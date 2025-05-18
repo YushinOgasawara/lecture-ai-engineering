@@ -180,6 +180,7 @@ def test_model_performance(train_model):
     # 環境変数の初期化
     with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
         print(f"MODEL_IMPROVED=true", file=fh)
+        print(f"FIRST_MODEL=true", file=fh)
 
     """既存モデルファイルが存在するか確認"""
     if not os.path.exists(MODEL_PATH):
