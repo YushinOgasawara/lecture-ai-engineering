@@ -43,9 +43,14 @@ jobs:
     - name: Run model tests
       id: model_test
       run: |
-        pytest day5/homework/tests/test_model.py -v 2>&1 | tee test_output.txt
+        pytest day5/homework/tests/test_model.py -v -x || exit_code=$?
+        if [ $exit_code -ne 0 ]; then
+          echo "以下のテストで失敗しました。 $exit_code"
+          exit $exit_code
+        fi
 
     - name: Update model
+      if: success()
       env:
         USERNAME: github-actions [bot]
         EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
