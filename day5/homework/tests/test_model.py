@@ -81,14 +81,14 @@ def train_model(sample_data, preprocessor):
     X = sample_data.drop("Survived", axis=1)
     y = sample_data["Survived"].astype(int)
     X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.2, random_state=0
+        X, y, test_size=0.2, random_state=42
     )
 
     # モデルパイプラインの作成
     model = Pipeline(
         steps=[
             ("preprocessor", preprocessor),
-            ("classifier", RandomForestClassifier(n_estimators=100, random_state=0)),
+            ("classifier", RandomForestClassifier(n_estimators=100, random_state=42)),
         ]
     )
 
@@ -143,21 +143,21 @@ def test_model_reproducibility(sample_data, preprocessor):
     X = sample_data.drop("Survived", axis=1)
     y = sample_data["Survived"].astype(int)
     X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.2, random_state=0
+        X, y, test_size=0.2, random_state=42
     )
 
     # 同じパラメータで２つのモデルを作成
     model1 = Pipeline(
         steps=[
             ("preprocessor", preprocessor),
-            ("classifier", RandomForestClassifier(n_estimators=100, random_state=0)),
+            ("classifier", RandomForestClassifier(n_estimators=100, random_state=42)),
         ]
     )
 
     model2 = Pipeline(
         steps=[
             ("preprocessor", preprocessor),
-            ("classifier", RandomForestClassifier(n_estimators=100, random_state=0)),
+            ("classifier", RandomForestClassifier(n_estimators=100, random_state=42)),
         ]
     )
 
