@@ -62,6 +62,7 @@ jobs:
         NEW_MODEL_ACCURACY: ${{ steps.model_test.outputs.NEW_MODEL_ACCURACY }}
         OLD_MODEL_F1: ${{ steps.model_test.outputs.OLD_MODEL_F1 }}
         NEW_MODEL_F1: ${{ steps.model_test.outputs.NEW_MODEL_F1 }}
+        INFERENCE_TIME: ${{ steps.model_test.outputs.INFERENCE_TIME }}
       
 
       run: |
@@ -79,6 +80,7 @@ jobs:
             if [ "${MODEL_IMPROVED}" = "true" ]; then
               COMMIT_MESSAGE="
                 モデルを更新: 
+                モデルの推論時間: ${INFERENCE_TIME}秒
                 モデルの精度: ${OLD_MODEL_ACCURACY} -> ${NEW_MODEL_ACCURACY}
                 モデルのF1スコア: ${OLD_MODEL_F1} -> ${NEW_MODEL_F1}
                 "
