@@ -18,6 +18,9 @@ MODEL_DIR = os.path.join(os.path.dirname(__file__), "../models")
 LATEST_MODEL_PATH = os.path.join(MODEL_DIR, "titanic_model_latest.pkl")
 MODEL_PATH = os.path.join(MODEL_DIR, "titanic_model.pkl")
 
+# seedsを固定
+seeds = 42
+
 
 @pytest.fixture
 def sample_data():
@@ -81,14 +84,17 @@ def train_model(sample_data, preprocessor):
     X = sample_data.drop("Survived", axis=1)
     y = sample_data["Survived"].astype(int)
     X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.2, random_state=42
+        X, y, test_size=0.2, random_state=seeds
     )
 
     # モデルパイプラインの作成
     model = Pipeline(
         steps=[
             ("preprocessor", preprocessor),
-            ("classifier", RandomForestClassifier(n_estimators=100, random_state=42)),
+            (
+                "classifier",
+                RandomForestClassifier(n_estimators=100, random_state=seeds),
+            ),
         ]
     )
 
@@ -143,21 +149,27 @@ def test_model_reproducibility(sample_data, preprocessor):
     X = sample_data.drop("Survived", axis=1)
     y = sample_data["Survived"].astype(int)
     X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.2, random_state=42
+        X, y, test_size=0.2, random_state=seeds
     )
 
     # 同じパラメータで２つのモデルを作成
     model1 = Pipeline(
         steps=[
             ("preprocessor", preprocessor),
-            ("classifier", RandomForestClassifier(n_estimators=100, random_state=42)),
+            (
+                "classifier",
+                RandomForestClassifier(n_estimators=100, random_state=seeds),
+            ),
         ]
     )
 
     model2 = Pipeline(
         steps=[
             ("preprocessor", preprocessor),
-            ("classifier", RandomForestClassifier(n_estimators=100, random_state=42)),
+            (
+                "classifier",
+                RandomForestClassifier(n_estimators=100, random_state=seeds),
+            ),
         ]
     )
 

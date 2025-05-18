@@ -11,9 +11,12 @@ from sklearn.metrics import accuracy_score
 from sklearn.preprocessing import LabelEncoder
 from mlflow.models.signature import infer_signature
 
+# seedsを固定
+seeds = 42
+
 
 # データ準備
-def prepare_data(test_size=0.2, random_state=0):
+def prepare_data(test_size=0.2, random_state=seeds):
     # Titanicデータセットの読み込み
     path = "data/Titanic.csv"
     data = pd.read_csv(path)
@@ -41,7 +44,13 @@ def prepare_data(test_size=0.2, random_state=0):
 
 # 学習と評価
 def train_and_evaluate(
-    X_train, X_test, y_train, y_test, n_estimators=100, max_depth=None, random_state=0
+    X_train,
+    X_test,
+    y_train,
+    y_test,
+    n_estimators=100,
+    max_depth=None,
+    random_state=seeds,
 ):
     model = RandomForestClassifier(
         n_estimators=n_estimators, max_depth=max_depth, random_state=random_state
