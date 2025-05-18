@@ -6,7 +6,7 @@ import numpy as np
 import random
 import pickle
 from sklearn.model_selection import train_test_split
-from sklearn.ensemble import AdaBoostClassifier
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
 from sklearn.preprocessing import LabelEncoder
 from mlflow.models.signature import infer_signature
@@ -52,7 +52,7 @@ def train_and_evaluate(
     max_depth=None,
     random_state=seeds,
 ):
-    model = AdaBoostClassifier(n_estimators=n_estimators, random_state=random_state)
+    model = RandomForestClassifier(n_estimators=n_estimators, random_state=random_state)
     model.fit(X_train, y_train)
     predictions = model.predict(X_test)
     accuracy = accuracy_score(y_test, predictions)
