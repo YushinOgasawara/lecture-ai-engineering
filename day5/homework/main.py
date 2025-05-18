@@ -12,7 +12,7 @@ from sklearn.preprocessing import LabelEncoder
 from mlflow.models.signature import infer_signature
 
 # seedsを固定
-seeds = 0
+seeds = 42
 
 
 # データ準備
