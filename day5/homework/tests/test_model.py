@@ -19,7 +19,7 @@ LATEST_MODEL_PATH = os.path.join(MODEL_DIR, "titanic_model_latest.pkl")
 MODEL_PATH = os.path.join(MODEL_DIR, "titanic_model.pkl")
 
 # seedsを固定
-seeds = 5
+seeds = 8
 
 
 @pytest.fixture
