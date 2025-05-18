@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 import pickle
 import time
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import AdaBoostClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, f1_score
 from sklearn.impute import SimpleImputer
@@ -19,7 +19,7 @@ LATEST_MODEL_PATH = os.path.join(MODEL_DIR, "titanic_model_latest.pkl")
 MODEL_PATH = os.path.join(MODEL_DIR, "titanic_model.pkl")
 
 # seedsを固定
-seeds = 8
+seeds = 42
 
 
 @pytest.fixture
@@ -93,7 +93,7 @@ def train_model(sample_data, preprocessor):
             ("preprocessor", preprocessor),
             (
                 "classifier",
-                RandomForestClassifier(n_estimators=100, random_state=seeds),
+                AdaBoostClassifier(n_estimators=100, random_state=seeds),
             ),
         ]
     )
@@ -158,7 +158,7 @@ def test_model_reproducibility(sample_data, preprocessor):
             ("preprocessor", preprocessor),
             (
                 "classifier",
-                RandomForestClassifier(n_estimators=100, random_state=seeds),
+                AdaBoostClassifier(n_estimators=100, random_state=seeds),
             ),
         ]
     )
@@ -168,7 +168,7 @@ def test_model_reproducibility(sample_data, preprocessor):
             ("preprocessor", preprocessor),
             (
                 "classifier",
-                RandomForestClassifier(n_estimators=100, random_state=seeds),
+                AdaBoostClassifier(n_estimators=100, random_state=seeds),
             ),
         ]
     )

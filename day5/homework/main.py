@@ -6,13 +6,13 @@ import numpy as np
 import random
 import pickle
 from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import AdaBoostClassifier
 from sklearn.metrics import accuracy_score
 from sklearn.preprocessing import LabelEncoder
 from mlflow.models.signature import infer_signature
 
 # seedsを固定
-seeds = 8
+seeds = 42
 
 
 # データ準備
@@ -52,8 +52,8 @@ def train_and_evaluate(
     max_depth=None,
     random_state=seeds,
 ):
-    model = RandomForestClassifier(
-        n_estimators=n_estimators, max_depth=max_depth, random_state=random_state
+    model = AdaBoostClassifier(
+        n_estimators=n_estimators, random_state=random_state
     )
     model.fit(X_train, y_train)
     predictions = model.predict(X_test)
