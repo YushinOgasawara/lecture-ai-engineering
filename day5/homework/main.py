@@ -52,9 +52,7 @@ def train_and_evaluate(
     max_depth=None,
     random_state=seeds,
 ):
-    model = AdaBoostClassifier(
-        n_estimators=n_estimators, random_state=random_state
-    )
+    model = AdaBoostClassifier(n_estimators=n_estimators, random_state=random_state)
     model.fit(X_train, y_train)
     predictions = model.predict(X_test)
     accuracy = accuracy_score(y_test, predictions)
