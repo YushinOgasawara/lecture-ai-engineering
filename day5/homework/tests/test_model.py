@@ -142,6 +142,9 @@ def test_model_inference_time(train_model):
     # 推論時間が1秒未満であることを確認
     assert inference_time < 1.0, f"推論時間が長すぎます: {inference_time}秒"
 
+    with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
+        print(f"INFERENCE_TIME={inference_time}", file=fh)
+
 
 def test_model_reproducibility(sample_data, preprocessor):
     """モデルの再現性を検証"""
