@@ -9,8 +9,12 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
     - uses: actions/checkout@v3
+      with:
+          ref: ${{ github.event.pull_request.head.ref }}
     
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -25,17 +29,62 @@ jobs:
         
     - name: Lint with flake8
       run: |
-        flake8 day5/演習3 --count --select=E9,F63,F7,F82 --show-source --statistics
-        flake8 day5/演習3 --count --exit-zero --max-complexity=10 --max-line-length=88 --statistics
+        flake8 day5/homework --count --select=E9,F63,F7,F82 --show-source --statistics
+        flake8 day5/homework --count --exit-zero --max-complexity=10 --max-line-length=88 --statistics
         
     - name: Format check with black
       run: |
-        black --check day5/演習3
+        black --check day5/homework
         
     - name: Run data tests
       run: |
-        pytest day5/演習3/tests/test_data.py -v
+        pytest day5/homework/tests/test_data.py -v
         
     - name: Run model tests
+      id: model_test
       run: |
-        pytest day5/演習3/tests/test_model.py -v
+        pytest day5/homework/tests/test_model.py -v -x || exit_code=$?
+        if [ $exit_code -ne 0 ]; then
+          echo "テスト失敗: コード $exit_code"
+          exit $exit_code
+        fi
+
+    - name: Update model
+      if: success()
+      env:
+        USERNAME: github-actions [bot]
+        EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_REPOSITORY: ${{ github.repository }}
+        FIRST_MODEL: ${{ steps.model_test.outputs.FIRST_MODEL }}
+        MODEL_IMPROVED: ${{ steps.model_test.outputs.MODEL_IMPROVED }}
+        OLD_MODEL_ACCURACY: ${{ steps.model_test.outputs.OLD_MODEL_ACCURACY }}
+        NEW_MODEL_ACCURACY: ${{ steps.model_test.outputs.NEW_MODEL_ACCURACY }}
+        OLD_MODEL_F1: ${{ steps.model_test.outputs.OLD_MODEL_F1 }}
+        NEW_MODEL_F1: ${{ steps.model_test.outputs.NEW_MODEL_F1 }}
+      
+
+      run: |
+        if [ -f "day5/homework/models/titanic_model_latest.pkl" ]; then
+          git remote set-url origin https://github-actions:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}
+          git config --local user.email "${EMAIL}"
+          git config --local user.name "${USERNAME}"
+          cd day5/homework/models
+          mv titanic_model_latest.pkl titanic_model.pkl
+          git add .
+          
+          if [ "${FIRST_MODEL}" = "true" ]; then
+            COMMIT_MESSAGE="新しいモデルをコミット"
+          else
+            if [ "${MODEL_IMPROVED}" = "true" ]; then
+              COMMIT_MESSAGE="
+                モデルを更新: 
+                モデルの精度: ${OLD_MODEL_ACCURACY} -> ${NEW_MODEL_ACCURACY}
+                モデルのF1スコア: ${OLD_MODEL_F1} -> ${NEW_MODEL_F1}
+                "
+            fi
+          fi
+
+          git commit -m "${COMMIT_MESSAGE}" || echo "No changes to commit"
+          git push origin HEAD:develop
+        fi
