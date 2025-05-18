@@ -73,15 +73,15 @@ jobs:
           
           if [ "${FIRST_MODEL}" = "true" ]; then
             COMMIT_MESSAGE="新しいモデルをコミット"
-          fi
-
-          if [ "${MODEL_IMPROVED}" = "true" ]; then
-            COMMIT_MESSAGE="
-              モデルを更新: 
-              モデルの推論時間: ${OLD_MODEL_TIME}秒 -> ${NEW_MODEL_TIME}秒
-              モデルの精度: ${MODEL_ACCURACY} -> ${NEW_MODEL_ACCURACY}
-              モデルのF1スコア: ${OLD_MODEL_F1} -> ${NEW_MODEL_F1}
-              "
+          else
+            if [ "${MODEL_IMPROVED}" = "true" ]; then
+              COMMIT_MESSAGE="
+                モデルを更新: 
+                モデルの推論時間: ${OLD_MODEL_TIME}秒 -> ${NEW_MODEL_TIME}秒
+                モデルの精度: ${MODEL_ACCURACY} -> ${NEW_MODEL_ACCURACY}
+                モデルのF1スコア: ${OLD_MODEL_F1} -> ${NEW_MODEL_F1}
+                "
+            fi
           fi
 
           git commit -m "${COMMIT_MESSAGE}" || echo "No changes to commit"
