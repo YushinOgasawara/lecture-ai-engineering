@@ -58,8 +58,6 @@ jobs:
         GITHUB_REPOSITORY: ${{ github.repository }}
         FIRST_MODEL: ${{ steps.model_test.outputs.FIRST_MODEL }}
         MODEL_IMPROVED: ${{ steps.model_test.outputs.MODEL_IMPROVED }}
-        OLD_MODEL_TIME: ${{ steps.model_test.outputs.OLD_MODEL_TIME }}
-        NEW_MODEL_TIME: ${{ steps.model_test.outputs.NEW_MODEL_TIME }}
       
 
       run: |
@@ -77,7 +75,6 @@ jobs:
             if [ "${MODEL_IMPROVED}" = "true" ]; then
               COMMIT_MESSAGE="
                 モデルを更新: 
-                モデルの推論時間: ${OLD_MODEL_TIME}秒 -> ${NEW_MODEL_TIME}秒
                 モデルの精度: ${MODEL_ACCURACY} -> ${NEW_MODEL_ACCURACY}
                 モデルのF1スコア: ${OLD_MODEL_F1} -> ${NEW_MODEL_F1}
                 "

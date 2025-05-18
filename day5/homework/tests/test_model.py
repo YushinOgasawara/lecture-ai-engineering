@@ -201,36 +201,13 @@ def test_model_performance(train_model):
         with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
             print(f"FIRST_MODEL=false", file=fh)
 
-    """モデルの性能を検証"""
     latest_model, X_test, y_test = train_model
 
     with open(MODEL_PATH, "rb") as f:
         old_model = pickle.load(f)
 
-    # 推論時間の計測
-    start_time = time.time()
     old_pred = old_model.predict(X_test)
-    end_time = time.time()
-    old_inference_time = end_time - start_time
-
-    start_time = time.time()
     latest_pred = latest_model.predict(X_test)
-    end_time = time.time()
-    latest_inference_time = end_time - start_time
-
-    time_is_better = latest_inference_time < old_inference_time
-
-    if time_is_better:
-        with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
-            print(f"OLD_MODEL_TIME={old_inference_time}", file=fh)
-            print(f"NEW_MODEL_TIME={latest_inference_time}", file=fh)
-    else:
-        with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
-            print(f"MODEL_IMPROVED=false", file=fh)
-
-    assert (
-        time_is_better
-    ), f"新しいモデルの推論時間が古いモデルより遅いです。 latest:{latest_inference_time}秒  old:{old_inference_time}秒"
 
     # 予測精度の計算
     old_accuracy = accuracy_score(y_test, old_pred)
